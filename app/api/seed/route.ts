@@ -6,6 +6,7 @@ import { projects } from "@/data/projects";
 import { skill } from "@/data/skill";
 import { careerTimeline } from "@/data/cv";
 import { blogPosts } from "@/lib/blog";
+import { blogPostRow, projectRow, toExperience, toSkill } from "@/lib/shape";
 
 export async function POST() {
   const denied = await requireAdmin();
@@ -16,15 +17,7 @@ export async function POST() {
 
   const { count: pc } = await supabase.from("projects").select("*", { count: "exact", head: true });
   if (!pc) {
-    const rows = projects.map((p) => ({
-      name: p.name,
-      date: p.date,
-      description: p.description || "",
-      image: p.image,
-      preview: p.preview,
-      link_source: p.linkSource,
-      tags: p.tag || [],
-    }));
+    const rows = projects.map(projectRow);
     const { error } = await supabase.from("projects").insert(rows);
     if (error) throw error;
     result.projects = rows.length;
@@ -32,16 +25,7 @@ export async function POST() {
 
   const { count: bc } = await supabase.from("blog_posts").select("*", { count: "exact", head: true });
   if (!bc) {
-    const rows = blogPosts.map((p) => ({
-      slug: p.slug,
-      title: p.title,
-      category: p.category,
-      summary: p.summary,
-      published_at: p.publishedAt,
-      read_time: p.readTime,
-      cover: p.cover,
-      content: p.content || [],
-    }));
+    const rows = blogPosts.map(blogPostRow);
     const { error } = await supabase.from("blog_posts").insert(rows);
     if (error) throw error;
     result.blog_posts = rows.length;
@@ -49,7 +33,7 @@ export async function POST() {
 
   const { count: sc } = await supabase.from("skills").select("*", { count: "exact", head: true });
   if (!sc) {
-    const rows = skill.map((s) => ({ name: s.name, link: s.link, image: s.image }));
+    const rows = skill.map(toSkill);
     const { error } = await supabase.from("skills").insert(rows);
     if (error) throw error;
     result.skills = rows.length;
@@ -57,14 +41,7 @@ export async function POST() {
 
   const { count: ec } = await supabase.from("experiences").select("*", { count: "exact", head: true });
   if (!ec) {
-    const rows = careerTimeline.map((e, i) => ({
-      company: e.company,
-      role: e.role,
-      period: e.period,
-      location: e.location,
-      highlights: e.highlights || [],
-      sort_order: i,
-    }));
+    const rows = careerTimeline.map((e, i) => ({ ...toExperience(e), sort_order: i }));
     const { error } = await supabase.from("experiences").insert(rows);
     if (error) throw error;
     result.experiences = rows.length;

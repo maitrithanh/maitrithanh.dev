@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
-import { list, create, update } from "@/lib/supabase/api";
+import { list } from "@/lib/supabase/api";
 import { createAdminClient } from "@/lib/supabase/server";
 
 export async function GET() {

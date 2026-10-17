@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { projects as fallbackProjects } from "@/data/projects";
+import { toProject } from "@/lib/shape";
 import { ExportSquare } from "iconsax-reactjs";
 import { useModuleVisibility } from "@/app/utils/useModuleVisibility";
 
@@ -17,10 +18,7 @@ const ProjectsPage = () => {
       .then((r) => r.json())
       .then((data) => {
         if (data && data.length > 0) {
-          setProjects(data.map((p: any) => ({
-            name: p.name, date: p.date, description: p.description || "", image: p.image,
-            preview: p.preview, linkSource: p.link_source, tag: p.tags || [],
-          })));
+          setProjects(data.map(toProject));
         }
       })
       .catch(() => {});

@@ -2,7 +2,7 @@ import { createClient } from "./server";
 import { createAdminClient } from "./server";
 import { applySavedOrder } from "@/lib/sort";
 
-type TableName = "projects" | "blog_posts" | "skills" | "experiences" | "site_settings";
+export type TableName = "projects" | "blog_posts" | "skills" | "experiences" | "site_settings";
 const sortableTables = new Set<TableName>(["projects", "blog_posts", "skills", "experiences"]);
 
 export async function list(table: TableName, options?: { orderBy?: string; ascending?: boolean }) {

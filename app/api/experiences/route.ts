@@ -1,17 +1,7 @@
+import { collectionRoutes } from "@/lib/crud-routes";
+
 export const dynamic = "force-dynamic";
-import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth";
-import { list, create } from "@/lib/supabase/api";
 
-export async function GET() {
-  const data = await list("experiences", { orderBy: "sort_order", ascending: true });
-  return NextResponse.json(data);
-}
-
-export async function POST(request: Request) {
-  const denied = await requireAdmin();
-  if (denied) return denied;
-  const body = await request.json();
-  const data = await create("experiences", body);
-  return NextResponse.json(data);
-}
+const routes = collectionRoutes("experiences", { orderBy: "sort_order", ascending: true });
+export const GET = routes.GET;
+export const POST = routes.POST;

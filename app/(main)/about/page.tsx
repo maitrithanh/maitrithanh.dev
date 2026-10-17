@@ -18,9 +18,11 @@ const AboutPage = () => {
   return (
     <div className="flex flex-col gap-14">
       {modules.isVisible("bio") && (
-      <section style={{ order: modules.order("bio", 1) }} className="grid gap-8 sm:grid-cols-[10rem_1fr] sm:items-start">
-        <div className="relative aspect-square overflow-hidden rounded-full bg-muted">
-          <Image src="/Thanh2.jpg" alt="Mai Tri Thanh" fill className="object-cover object-[center_30%]" priority />
+      <section style={{ order: modules.order("bio", 1) }} className="w-full">
+        <div className="flex w-full justify-center items-center">
+          <div className="w-full relative aspect-square overflow-hidden rounded-full bg-muted flex justify-center items-center max-h-56 max-w-56">
+            <Image src="/Thanh2.jpg" alt="Mai Tri Thanh" fill className="object-cover object-[center_30%]" priority />
+          </div>
         </div>
         <div className="space-y-5 text-base leading-7 text-muted-foreground">
           <Badge variant="secondary" className="w-fit font-normal text-muted-foreground">About</Badge>

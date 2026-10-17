@@ -11,6 +11,7 @@ const Navbar = () => {
   const pathName = usePathname();
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [isShowBorder, setIsShowBorder] = useState(false);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -21,8 +22,10 @@ const Navbar = () => {
       if (Math.abs(delta) < 6) {
         return;
       }
+      setIsShowBorder(true);
 
       if (currentY <= 40) {
+        setIsShowBorder(false);
         setIsHeaderVisible(true);
         lastScrollY.current = currentY;
         return;
@@ -53,8 +56,8 @@ const Navbar = () => {
     <header
       className={`fixed inset-x-0 top-0 z-40 transition-transform duration-300 ${isHeaderVisible ? "translate-y-0" : "-translate-y-full"}`}
     >
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-5 md:h-16 md:px-6">
+      <div className={`${isShowBorder ? "border-b" : ""} bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-transform duration-300`}>
+        <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-5 md:h-16 md:px-6">
           <Link
             href="/"
             prefetch

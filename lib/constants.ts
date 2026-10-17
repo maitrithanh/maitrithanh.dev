@@ -5,6 +5,4 @@ export const SITE_DESCRIPTION =
   "Fullstack Developer specializing in Next.js, React, TypeScript, and Laravel. Building fast web products with clean architecture and delightful UX.";
 export const SITE_KEYWORDS =
   "Mai Tri Thanh, fullstack developer, Next.js developer, React developer, TypeScript, Laravel, portfolio, web developer, HCMC, Vietnam";
-export const SITE_AUTHOR = "Mai Tri Thanh";
-export const TWITTER_HANDLE = "@maitrithanh";
 export const SITE_OG_IMAGE = "/opengraph-image";

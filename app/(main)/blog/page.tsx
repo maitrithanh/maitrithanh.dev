@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { blogPosts as fallbackPosts } from "@/lib/blog";
+import { toBlogPost } from "@/lib/shape";
 import { Calendar, ArrowRight } from "iconsax-reactjs";
 import { useModuleVisibility } from "@/app/utils/useModuleVisibility";
 
@@ -17,10 +18,7 @@ const BlogPage = () => {
       .then((r) => r.json())
       .then((data) => {
         if (data && data.length > 0) {
-          setPosts(data.map((p: any) => ({
-            slug: p.slug, title: p.title, category: p.category, summary: p.summary,
-            publishedAt: p.published_at, readTime: p.read_time, cover: p.cover, content: p.content || [],
-          })));
+          setPosts(data.map(toBlogPost));
         }
       })
       .catch(() => {});

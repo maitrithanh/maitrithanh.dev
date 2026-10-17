@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { projects as fallbackProjects } from "@/data/projects";
 import { skill as fallbackSkills } from "@/data/skill";
 import { careerTimeline as fallbackTimeline, cvQuickInfo as fallbackQuickInfo } from "@/data/cv";
+import { toExperience, toProject, toSkill } from "@/lib/shape";
 import { ArrowRight, ExportSquare } from "iconsax-reactjs";
 import { useModuleVisibility } from "@/app/utils/useModuleVisibility";
 import { motion } from "motion/react"
@@ -24,7 +25,7 @@ import {
 
 function RevealSection({ children, className, show = true, order }: { children: React.ReactNode; className?: string; show?: boolean; order?: number }) {
   if (!show) return null;
-  return <div style={{ order }} className={`border-t pt-10 ${className || ""}`}>{children}</div>;
+  return <div style={{ order }} className={`border-b last:border-none border-gray-100 pb-10 ${className || ""}`}>{children}</div>;
 }
 
 export default function Home() {
@@ -38,27 +39,20 @@ export default function Home() {
 
   useEffect(() => {
     Promise.allSettled([
-      fetch("/api/projects").then((r) => r.json()).then((d) => d.length && setProjects(d.map((p: any) => ({
-        name: p.name, date: p.date, description: p.description || "", image: p.image,
-        preview: p.preview, linkSource: p.link_source, tag: p.tags || [],
-      })))),
-      fetch("/api/skills").then((r) => r.json()).then((d) => d.length && setSkills(d.map((s: any) => ({
-        name: s.name, link: s.link, image: s.image,
-      })))),
-      fetch("/api/experiences").then((r) => r.json()).then((d) => d.length && setTimeline(d.map((e: any) => ({
-        company: e.company, role: e.role, period: e.period, location: e.location, highlights: e.highlights || [],
-      })))),
+      fetch("/api/projects").then((r) => r.json()).then((d) => d.length && setProjects(d.map(toProject))),
+      fetch("/api/skills").then((r) => r.json()).then((d) => d.length && setSkills(d.map(toSkill))),
+      fetch("/api/experiences").then((r) => r.json()).then((d) => d.length && setTimeline(d.map(toExperience))),
       fetch("/api/settings").then((r) => r.json()).then((d) => Object.keys(d).length && setSettings(d)),
     ]);
   }, []);
 
   return (
-    <div className="flex flex-col gap-16 pb-20">
-      <section className="grid gap-8 sm:grid-cols-[14rem_1fr] sm:items-start">
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="relative aspect-square h-full overflow-hidden rounded-full bg-muted">
+    <div className="flex flex-col gap-6">
+      <section className="h-[68dvh] flex justify-center items-center">
+        {/* <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="relative aspect-square h-full overflow-hidden rounded-full bg-muted max-h-56 max-w-56">
           <Image src="/Thanh2.jpg" alt="Mai Tri Thanh" fill priority className="object-cover object-[center_30%]" />
-        </motion.div>
-        <div className="space-y-5">
+        </motion.div> */}
+        <div className="space-y-5 flex flex-col justify-center items-center w-full">
           <Badge variant="secondary" className="w-fit font-normal text-muted-foreground">{settings.hero_badge || "Building clean web experiences"}</Badge>
           <h1 className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl">I&apos;m Mai Tri Thanh.</h1>
           <p className="max-w-xl text-base leading-7 text-muted-foreground">{settings.hero_subtitle || "..."}</p>
@@ -68,12 +62,12 @@ export default function Home() {
               whileTap={{ scale: 0.95 }} >
               <Button asChild><Link href="/projects">View projects <ArrowRight variant="Outline" className="ml-1.5" /></Link></Button>
             </motion.button>
-            <motion.button whileHover={{ scale: 1.1 }}
+            {/* <motion.button whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }} >
               <Button asChild variant="outline"><Link href="/about">About me</Link></Button>
-            </motion.button>
+            </motion.button> */}
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Button variant="ghost" onClick={() => resumeDialog.current?.showModal()}>Resume</Button>
+              <Button variant="secondary" onClick={() => resumeDialog.current?.showModal()}>My Resume</Button>
             </motion.div>
           </div>
         </div>
@@ -92,41 +86,13 @@ export default function Home() {
         </div>
       </dialog>
 
-      <RevealSection show={modules.isVisible("stats")} order={modules.order("stats", 1)}>
-        <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
-          <div>
-            <p className="text-3xl font-semibold tracking-tight text-foreground">
-              <Counter to={2} />+
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">Years of experience</p>
-          </div>
-          <div>
-            <p className="text-3xl font-semibold tracking-tight text-foreground">
-              <Counter to={projects.length} />+</p>
-            <p className="mt-1 text-sm text-muted-foreground">Projects shipped</p>
-          </div>
-          <div>
-            <p className="text-3xl font-semibold tracking-tight text-foreground">
-              <Counter to={skills.length} />+
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">Technologies used</p>
-          </div>
-          <div>
-            <p className="text-3xl font-semibold tracking-tight text-foreground">
-              <Counter to={500} />+
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">Git contributions</p>
-          </div>
-        </div>
-      </RevealSection>
-
-      <RevealSection show={modules.isVisible("tech_stack")} order={modules.order("tech_stack", 2)}>
+      <RevealSection show={modules.isVisible("tech_stack")} order={modules.order("tech_stack", 1)}>
         <div>
           <h2 className="text-md font-bold uppercase tracking-wider text-primary">
             Tech Stack
           </h2>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <AvatarGroup className="gap-6 flex flex-wrap justify-center items-center">
+          <div className="mt-6 flex flex-wrap gap-2 w-full">
+            <AvatarGroup className="gap-6 flex flex-wrap justify-between w-full items-center">
               {skills.slice(0, 12).map((item) => (
                 <Link key={item.name} href={item.link} target="_blank" rel="noreferrer">
                   <Avatar key={item.name} className="size-12 rounded-sm">
@@ -141,7 +107,7 @@ export default function Home() {
         </div>
       </RevealSection>
 
-      <RevealSection show={modules.isVisible("education")} order={modules.order("education", 3)}>
+      <RevealSection show={modules.isVisible("education")} order={modules.order("education", 2)}>
         <div>
           <h2 className="text-md font-bold uppercase tracking-wider text-primary">
             Education
@@ -154,7 +120,7 @@ export default function Home() {
         </div>
       </RevealSection>
 
-      <RevealSection show={modules.isVisible("experience")} order={modules.order("experience", 4)}>
+      <RevealSection show={modules.isVisible("experience")} order={modules.order("experience", 3)}>
         <div>
           <h2 className="text-md font-bold uppercase tracking-wider text-primary">
             Experience
@@ -180,6 +146,34 @@ export default function Home() {
                 </ul>
               </div>
             ))}
+          </div>
+        </div>
+      </RevealSection>
+
+      <RevealSection show={modules.isVisible("stats")} order={modules.order("stats", 4)}>
+        <div className="flex justify-between gap-6 w-full">
+          <div>
+            <p className="text-3xl font-semibold tracking-tight text-foreground">
+              <Counter to={2} />+
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">Years of experience</p>
+          </div>
+          <div>
+            <p className="text-3xl font-semibold tracking-tight text-foreground">
+              <Counter to={projects.length} />+</p>
+            <p className="mt-1 text-sm text-muted-foreground">Projects shipped</p>
+          </div>
+          <div>
+            <p className="text-3xl font-semibold tracking-tight text-foreground">
+              <Counter to={skills.length} />+
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">Technologies used</p>
+          </div>
+          <div>
+            <p className="text-3xl font-semibold tracking-tight text-foreground">
+              <Counter to={500} />+
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">Git contributions</p>
           </div>
         </div>
       </RevealSection>

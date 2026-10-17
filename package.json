@@ -18,14 +18,12 @@
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.2",
     "@vercel/analytics": "^1.6.1",
-    "animejs": "^4.3.6",
     "class-variance-authority": "^0.7.0",
     "iconsax-reactjs": "^0.0.8",
     "motion": "^13.4.3",
     "next": "^16.3.5",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "react-use-measure": "^2.1.7",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
