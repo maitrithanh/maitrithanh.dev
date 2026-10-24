@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "./supabase/server";
 
-export const ALLOWED_EMAIL =
-  process.env.ADMIN_EMAIL || "maitrithanh06@gmail.com";
+import { ALLOWED_EMAIL } from "./auth-config";
+
+export { ALLOWED_EMAIL };
 
 export async function getAdminUser() {
   const supabase = await createClient();
