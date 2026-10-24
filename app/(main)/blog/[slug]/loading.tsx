@@ -1,23 +1,21 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { Loading } from "@/components/ui/page-skeletons";
 
-// Mirrors BlogPostView: cover, badge, title, summary, meta, paragraphs.
-export default function Loading() {
+// Mirrors BlogPostView: category, title, summary, cover, paragraphs.
+export default function PostLoading() {
   return (
-    <div role="status" className="mx-auto max-w-3xl space-y-6">
-      <span className="sr-only">Loading...</span>
-      <Skeleton className="h-10 w-36" />
-      <div className="overflow-hidden rounded-xl bg-muted/30">
-        <Skeleton className="h-56 w-full rounded-none md:h-72" />
-        <div className="space-y-5 p-6 md:p-8">
-          <Skeleton className="h-5 w-20 rounded-full" />
-          <Skeleton className="h-10 w-4/5" />
-          <Skeleton className="h-5 w-full" />
-          <Skeleton className="h-4 w-48" />
-          <div className="space-y-2 pt-2">
-            {["w-full", "w-11/12", "w-full", "w-3/4", "w-full", "w-5/6"].map((w, i) => <Skeleton key={i} className={`h-4 ${w}`} />)}
-          </div>
+    <Loading>
+      <div className="mx-auto max-w-3xl pt-6 md:pt-10">
+        <Skeleton className="mb-10 h-5 w-24" />
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="mt-4 h-12 w-full rounded-xl" />
+        <Skeleton className="mt-3 h-12 w-2/3 rounded-xl" />
+        <Skeleton className="mt-6 h-6 w-full" />
+        <Skeleton className="mt-10 aspect-[16/9] w-full rounded-2xl" />
+        <div className="mt-10 space-y-3">
+          {["w-full", "w-11/12", "w-full", "w-3/4", "w-full", "w-5/6"].map((w, i) => <Skeleton key={i} className={`h-5 ${w}`} />)}
         </div>
       </div>
-    </div>
+    </Loading>
   );
 }

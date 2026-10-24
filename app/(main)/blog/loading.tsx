@@ -1,14 +1,23 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { CardGridSkeleton, PageHeaderSkeleton } from "@/components/ui/page-skeletons";
+import { Loading, PageIntroSkeleton } from "@/components/ui/page-skeletons";
 
-export default function Loading() {
+export default function BlogLoading() {
   return (
-    <div role="status" className="space-y-12">
-      <span className="sr-only">Loading...</span>
-      <PageHeaderSkeleton />
-      <CardGridSkeleton count={3} className="md:grid-cols-3" image="aspect-[16/9]">
-        <Skeleton className="h-3 w-full" />
-      </CardGridSkeleton>
-    </div>
+    <Loading>
+      <PageIntroSkeleton />
+      <div className="border-t">
+        {Array.from({ length: 3 }, (_, i) => (
+          <div key={i} className="grid gap-4 border-b py-8 sm:grid-cols-[8rem_1fr_9rem] sm:gap-8">
+            <Skeleton className="h-4 w-24" />
+            <div className="space-y-3">
+              <Skeleton className="h-8 w-4/5" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+            <Skeleton className="hidden aspect-[4/3] w-full rounded-xl sm:block" />
+          </div>
+        ))}
+      </div>
+    </Loading>
   );
 }

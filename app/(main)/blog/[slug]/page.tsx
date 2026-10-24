@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { blogPosts as fallbackPosts } from "@/lib/blog";
 import { getBlogPostBySlug } from "@/lib/data";
 import { ArrowLeft } from "iconsax-reactjs";
@@ -49,13 +48,10 @@ export default async function BlogDetailPage({ params }: PageProps) {
             publisher: { "@type": "Person", name: "Mai Tri Thanh" },
             mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/blog/${post.slug}` },
           }} />
-      <div className="mx-auto max-w-3xl space-y-6">
-        <Button asChild variant="outline">
-          <Link href="/blog" className="inline-flex items-center gap-2">
-            <ArrowLeft variant="Outline" size={12} /> Back to blog
-          </Link>
-        </Button>
-
+      <div className="mx-auto max-w-3xl pt-6 md:pt-10">
+        <Link href="/blog" className="group mb-10 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" /> All posts
+        </Link>
         <BlogPostView post={post} />
       </div>
     </>
