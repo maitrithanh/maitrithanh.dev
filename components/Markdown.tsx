@@ -1,5 +1,6 @@
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { tidyEmphasis } from "@/lib/markdown-edit";
 
 // Raw HTML in the source is ignored and unsafe URLs (javascript: etc.) are
 // stripped by react-markdown's defaults, so CMS content can't inject script.
@@ -32,7 +33,7 @@ export function Markdown({ source }: { source: string }) {
   return (
     <div className="text-base leading-7 text-foreground/85 [&>*:first-child]:mt-0">
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
-        {source}
+        {tidyEmphasis(source)}
       </ReactMarkdown>
     </div>
   );

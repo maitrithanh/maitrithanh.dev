@@ -67,3 +67,14 @@ export function readTime(content: string[] | undefined) {
   const words = (content ?? []).join(" ").split(/\s+/).filter(Boolean).length;
   return `${Math.max(1, Math.round(words / 200))} min read`;
 }
+
+// Forgive "**word **" / "** word**" (invalid CommonMark, renders raw) by moving
+// the inner spaces outside the markers. Code spans and fences are left alone.
+export function tidyEmphasis(md: string) {
+  return md
+    .split(/(```[\s\S]*?(?:```|$)|`[^`\n]*`)/)
+    .map((part, i) => i % 2 ? part : part
+      .replace(/(\*\*|__|~~)([^\s*_~][^*_~\n]*?)(\s+)\1/g, "$1$2$1$3")
+      .replace(/(\*\*|__|~~)(\s+)([^*_~\n]*?[^\s*_~])\1/g, "$2$1$3$1"))
+    .join("");
+}

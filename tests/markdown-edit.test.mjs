@@ -47,3 +47,14 @@ test("readTime rounds up to at least a minute", () => {
   assert.equal(readTime([]), "1 min read");
   assert.equal(readTime(["word ".repeat(1000)]), "5 min read");
 });
+
+test("tidyEmphasis fixes stray inner spaces but leaves code and valid markup", async () => {
+  const { tidyEmphasis } = await import("../lib/markdown-edit.ts");
+  assert.equal(tidyEmphasis("A **strong **animation"), "A **strong** animation");
+  assert.equal(tidyEmphasis("a ** bold** b"), "a  **bold** b");
+  assert.equal(tidyEmphasis("~~old ~~ new"), "~~old~~  new");
+  assert.equal(tidyEmphasis("**a** and **b **c"), "**a** and **b** c");
+  assert.equal(tidyEmphasis("x `**keep **` y"), "x `**keep **` y");
+  assert.equal(tidyEmphasis("```\n**keep **\n```"), "```\n**keep **\n```");
+  assert.equal(tidyEmphasis("**fine** text"), "**fine** text");
+});
