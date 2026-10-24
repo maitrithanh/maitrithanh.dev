@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { blogPosts as fallbackPosts } from "@/lib/blog";
 import { getBlogPostBySlug } from "@/lib/data";
-import { ArrowLeft, Calendar, Clock } from "iconsax-reactjs";
+import { ArrowLeft } from "iconsax-reactjs";
+import { BlogPostView } from "@/components/BlogPostView";
 import { SITE_URL } from "@/lib/constants";
 import { createMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
@@ -57,25 +56,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
           </Link>
         </Button>
 
-        <div className="overflow-hidden rounded-xl bg-muted/30">
-          <div className="relative h-56 w-full md:h-72">
-            <Image src={post.cover} alt={post.title} fill className="object-cover" priority />
-          </div>
-          <div className="space-y-5 p-6 md:p-8">
-            <Badge variant="secondary" className="text-xs text-foreground/70">
-              {post.category}
-            </Badge>
-            <h1 className="text-3xl font-semibold leading-tight tracking-tight text-foreground md:text-4xl">{post.title}</h1>
-            <p className="text-base text-muted-foreground">{post.summary}</p>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5"><Calendar variant="Outline" />{new Date(post.publishedAt).toLocaleDateString("en-GB")}</span>
-              <span className="inline-flex items-center gap-1.5"><Clock variant="Outline" />{post.readTime}</span>
-            </div>
-            <article className="space-y-4 text-base leading-7 text-foreground/85">
-              {post.content.map((paragraph: string) => <p key={paragraph}>{paragraph}</p>)}
-            </article>
-          </div>
-        </div>
+        <BlogPostView post={post} />
       </div>
     </>
   );

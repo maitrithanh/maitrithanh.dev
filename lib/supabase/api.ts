@@ -37,18 +37,25 @@ export async function getById(table: TableName, id: string) {
   return data;
 }
 
-export async function create(table: TableName, body: Record<string, unknown>) {
+// Callers may not choose DB-owned columns.
+function writable(body: unknown) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("Invalid body");
+  const { id, created_at, updated_at, ...rest } = body as Record<string, unknown>;
+  return rest;
+}
+
+export async function create(table: TableName, body: unknown) {
   const supabase = await createAdminClient();
-  const { data, error } = await supabase.from(table).insert(body).select().single();
+  const { data, error } = await supabase.from(table).insert(writable(body)).select().single();
   if (error) throw error;
   return data;
 }
 
-export async function update(table: TableName, id: string, body: Record<string, unknown>) {
+export async function update(table: TableName, id: string, body: unknown) {
   const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from(table)
-    .update({ ...body, updated_at: new Date().toISOString() })
+    .update({ ...writable(body), updated_at: new Date().toISOString() })
     .eq("id", id)
     .select()
     .single();

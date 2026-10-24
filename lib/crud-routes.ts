@@ -36,8 +36,12 @@ export function itemRoutes(table: TableName) {
     DELETE: async (_: Request, { params }: { params: Promise<{ id: string }> }) => {
       const denied = await requireAdmin();
       if (denied) return denied;
-      await remove(table, (await params).id);
-      return NextResponse.json({ ok: true });
+      try {
+        await remove(table, (await params).id);
+        return NextResponse.json({ ok: true });
+      } catch (e) {
+        return fail(e, "Delete failed");
+      }
     },
   };
 }
