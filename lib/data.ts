@@ -1,66 +1,62 @@
 import { createClient } from "./supabase/server";
+import { list, type TableName } from "./supabase/api";
+import { getPageModules } from "./page-modules";
 import { projects as staticProjects } from "@/data/projects";
 import { blogPosts as staticBlogPosts } from "@/lib/blog";
 import { skill as staticSkills } from "@/data/skill";
 import { careerTimeline as staticTimeline } from "@/data/cv";
 import { toBlogPost, toExperience, toProject, toSkill } from "@/lib/shape";
 
-export async function getProjects() {
+// Server reads for the public pages. Same query and saved CMS order as the
+// /api routes; the bundled static data is used only when the database errors
+// or the table is empty.
+async function read<T>(table: TableName, map: (row: any) => NoInfer<T>, fallback: T[], options: { orderBy: string; ascending?: boolean }) {
   try {
-    const supabase = await createClient();
-    const { data } = await supabase.from("projects").select("*").order("created_at", { ascending: false });
-    if (data && data.length > 0) return data.map(toProject);
-  } catch {}
-  return staticProjects;
+    const rows = await list(table, options);
+    if (rows?.length) return rows.map(map);
+  } catch (e) {
+    console.error(`Failed to load ${table}, using static data`, e);
+  }
+  return fallback;
 }
 
-export async function getBlogPosts() {
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.from("blog_posts").select("*").order("published_at", { ascending: false });
-    if (data && data.length > 0) return data.map(toBlogPost);
-  } catch {}
-  return staticBlogPosts;
-}
+export const getProjects = () => read("projects", toProject, staticProjects, { orderBy: "created_at" });
+export const getBlogPosts = () => read("blog_posts", toBlogPost, staticBlogPosts, { orderBy: "published_at" });
+export const getSkills = () => read("skills", toSkill, staticSkills, { orderBy: "created_at", ascending: true });
+export const getExperiences = () => read("experiences", toExperience, staticTimeline, { orderBy: "sort_order", ascending: true });
 
 export async function getBlogPostBySlug(slug: string) {
   try {
     const supabase = await createClient();
-    const { data } = await supabase.from("blog_posts").select("*").eq("slug", slug).single();
+    const { data, error } = await supabase.from("blog_posts").select("*").eq("slug", slug).maybeSingle();
+    if (error) throw error;
     if (data) return toBlogPost(data);
-  } catch {}
+  } catch (e) {
+    console.error("Failed to load blog post, using static data", e);
+  }
   return staticBlogPosts.find((p) => p.slug === slug) || null;
 }
 
-export async function getSkills() {
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.from("skills").select("*").order("created_at");
-    if (data && data.length > 0) return data.map(toSkill);
-  } catch {}
-  return staticSkills;
-}
-
-export async function getExperiences() {
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.from("experiences").select("*").order("sort_order");
-    if (data && data.length > 0) return data.map(toExperience);
-  } catch {}
-  return staticTimeline;
-}
-
 export async function getSettings() {
+  const settings: Record<string, string> = {};
   try {
-    const supabase = await createClient();
-    const { data } = await supabase.from("site_settings").select("*");
-    if (data && data.length > 0) {
-      const settings: Record<string, string> = {};
-      for (const item of data) {
-        settings[item.key] = item.value;
-      }
-      return settings;
+    for (const item of await list("site_settings")) {
+      if (!item.key.startsWith("sort:") && item.key !== "page_modules") settings[item.key] = item.value;
     }
-  } catch {}
-  return {};
+  } catch (e) {
+    console.error("Failed to load settings, using defaults", e);
+  }
+  return settings;
+}
+
+// Visibility/order rows for one page; empty means "show everything in default order".
+export async function getModules(page: string) {
+  try {
+    return (await getPageModules())
+      .filter((m) => m.page === page)
+      .map((m) => ({ section: m.section, visible: m.visible }));
+  } catch (e) {
+    console.error("Failed to load page modules", e);
+    return [];
+  }
 }

@@ -1,28 +1,14 @@
-"use client";
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { projects as fallbackProjects } from "@/data/projects";
-import { toProject } from "@/lib/shape";
+import { getModules, getProjects } from "@/lib/data";
 import { ExportSquare } from "iconsax-reactjs";
-import { useModuleVisibility } from "@/app/utils/useModuleVisibility";
+import { moduleVisibility } from "@/app/utils/moduleVisibility";
 
-const ProjectsPage = () => {
-  const [projects, setProjects] = useState(fallbackProjects);
-  const modules = useModuleVisibility("projects");
-
-  useEffect(() => {
-    fetch("/api/projects")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data && data.length > 0) {
-          setProjects(data.map(toProject));
-        }
-      })
-      .catch(() => {});
-  }, []);
+const ProjectsPage = async () => {
+  const [projects, rows] = await Promise.all([getProjects(), getModules("projects")]);
+  const modules = moduleVisibility(rows);
 
   return (
     modules.isVisible("content") && (

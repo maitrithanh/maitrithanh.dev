@@ -1,28 +1,14 @@
-"use client";
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { blogPosts as fallbackPosts } from "@/lib/blog";
-import { toBlogPost } from "@/lib/shape";
+import { getBlogPosts, getModules } from "@/lib/data";
 import { Calendar, ArrowRight } from "iconsax-reactjs";
-import { useModuleVisibility } from "@/app/utils/useModuleVisibility";
+import { moduleVisibility } from "@/app/utils/moduleVisibility";
 
-const BlogPage = () => {
-  const [posts, setPosts] = useState(fallbackPosts);
-  const modules = useModuleVisibility("blog");
-
-  useEffect(() => {
-    fetch("/api/blog")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data && data.length > 0) {
-          setPosts(data.map(toBlogPost));
-        }
-      })
-      .catch(() => {});
-  }, []);
+const BlogPage = async () => {
+  const [posts, rows] = await Promise.all([getBlogPosts(), getModules("blog")]);
+  const modules = moduleVisibility(rows);
 
   return (
     modules.isVisible("content") && (

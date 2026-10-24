@@ -1,19 +1,11 @@
-"use client";
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { useModuleVisibility } from "@/app/utils/useModuleVisibility";
+import { moduleVisibility } from "@/app/utils/moduleVisibility";
+import { getModules, getSettings } from "@/lib/data";
 
-const AboutPage = () => {
-  const [settings, setSettings] = useState<Record<string, string>>({});
-  const modules = useModuleVisibility("about");
-
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d) => Object.keys(d).length && setSettings(d))
-      .catch(() => {});
-  }, []);
+const AboutPage = async () => {
+  const [settings, rows] = await Promise.all([getSettings(), getModules("about")]);
+  const modules = moduleVisibility(rows);
 
   return (
     <div className="flex flex-col gap-14">
