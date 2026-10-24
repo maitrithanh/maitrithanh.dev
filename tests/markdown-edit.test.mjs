@@ -11,6 +11,8 @@ test("wrap adds, selects and toggles off", () => {
   const off = wrap("hello **world**", 8, 13, "**", "**", "bold");
   assert.equal(apply("hello **world**", off), "hello world");
   assert.equal(apply("", wrap("", 0, 0, "_", "_", "italic")), "_italic_");
+  // A selection with surrounding spaces keeps them outside the markers.
+  assert.equal(apply("a strong b", wrap("a strong b", 1, 9, "**", "**", "bold")), "a **strong** b");
 });
 
 test("link selects the url when text is selected", () => {

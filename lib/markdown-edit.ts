@@ -6,6 +6,10 @@ export type TextEdit = { from: number; to: number; insert: string; selStart: num
 const LINE_MARKER = /^(#{1,6} |> |[-*+] \[[ x]\] |[-*+] |\d+\. )/;
 
 export function wrap(value: string, s: number, e: number, before: string, after: string, placeholder: string): TextEdit {
+  // Markers can't sit next to whitespace ("**word **" renders raw), so shrink
+  // the selection past any leading/trailing spaces, e.g. from a double-click.
+  while (s < e && /\s/.test(value[s])) s++;
+  while (e > s && /\s/.test(value[e - 1])) e--;
   const sel = value.slice(s, e);
   // Already wrapped → unwrap (toggle).
   if (sel && value.slice(s - before.length, s) === before && value.slice(e, e + after.length) === after) {
