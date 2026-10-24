@@ -6,6 +6,10 @@ export type TextEdit = { from: number; to: number; insert: string; selStart: num
 const LINE_MARKER = /^(#{1,6} |> |[-*+] \[[ x]\] |[-*+] |\d+\. )/;
 
 export function wrap(value: string, s: number, e: number, before: string, after: string, placeholder: string): TextEdit {
+  // Markers can't sit next to whitespace ("**word **" renders raw), so shrink
+  // the selection past any leading/trailing spaces, e.g. from a double-click.
+  while (s < e && /\s/.test(value[s])) s++;
+  while (e > s && /\s/.test(value[e - 1])) e--;
   const sel = value.slice(s, e);
   // Already wrapped → unwrap (toggle).
   if (sel && value.slice(s - before.length, s) === before && value.slice(e, e + after.length) === after) {
@@ -62,4 +66,15 @@ export function continueList(value: string, pos: number): TextEdit | null {
 export function readTime(content: string[] | undefined) {
   const words = (content ?? []).join(" ").split(/\s+/).filter(Boolean).length;
   return `${Math.max(1, Math.round(words / 200))} min read`;
+}
+
+// Forgive "**word **" / "** word**" (invalid CommonMark, renders raw) by moving
+// the inner spaces outside the markers. Code spans and fences are left alone.
+export function tidyEmphasis(md: string) {
+  return md
+    .split(/(```[\s\S]*?(?:```|$)|`[^`\n]*`)/)
+    .map((part, i) => i % 2 ? part : part
+      .replace(/(\*\*|__|~~)([^\s*_~][^*_~\n]*?)(\s+)\1/g, "$1$2$1$3")
+      .replace(/(\*\*|__|~~)(\s+)([^*_~\n]*?[^\s*_~])\1/g, "$2$1$3$1"))
+    .join("");
 }
