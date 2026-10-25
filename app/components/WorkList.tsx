@@ -26,7 +26,7 @@ export function WorkList({ projects }: { projects: Project[] }) {
     >
       <ul className="border-t">
         {projects.map((p, i) => (
-          <li key={p.name} className="border-b">
+          <li key={p.name} className="border-b last:border-b-0">
             <a
               href={p.preview}
               target="_blank"

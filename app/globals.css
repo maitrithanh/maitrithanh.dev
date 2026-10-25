@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 /* Palette taken from the portrait: polo navy as ink, a cool paper white,
-   and marigold as the one accent. Dark mode follows the OS. */
+   and marigold as the one accent. The theme script in app/layout.tsx sets
+   data-theme on <html> from the saved choice, falling back to the OS. */
 @layer base {
   :root {
     --background: 225 45% 97%;      /* paper  #F4F6FB */
@@ -29,26 +30,25 @@
     --radius: 0.75rem;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: 230 57% 12%;    /* #0D1330 */
-      --foreground: 229 50% 94%;
-      --card: 230 50% 15%;
-      --card-foreground: 229 50% 94%;
-      --popover: 230 50% 15%;
-      --popover-foreground: 229 50% 94%;
-      --primary: 229 50% 94%;
-      --primary-foreground: 230 57% 12%;
-      --secondary: 231 40% 20%;
-      --secondary-foreground: 229 50% 94%;
-      --muted: 231 40% 20%;
-      --muted-foreground: 228 27% 69%;
-      --accent: 231 40% 20%;
-      --accent-foreground: 229 50% 94%;
-      --border: 231 40% 24%;
-      --input: 231 40% 24%;
-      --ring: 41 91% 58%;
-    }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --background: 230 57% 12%;    /* #0D1330 */
+    --foreground: 229 50% 94%;
+    --card: 230 50% 15%;
+    --card-foreground: 229 50% 94%;
+    --popover: 230 50% 15%;
+    --popover-foreground: 229 50% 94%;
+    --primary: 229 50% 94%;
+    --primary-foreground: 230 57% 12%;
+    --secondary: 231 40% 20%;
+    --secondary-foreground: 229 50% 94%;
+    --muted: 231 40% 20%;
+    --muted-foreground: 228 27% 69%;
+    --accent: 231 40% 20%;
+    --accent-foreground: 229 50% 94%;
+    --border: 231 40% 24%;
+    --input: 231 40% 24%;
+    --ring: 41 91% 58%;
   }
 
   * {

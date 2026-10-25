@@ -3,7 +3,32 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
+import { Moon, Sun1 } from "iconsax-reactjs";
 import { menu } from "@/data/menu";
+
+// Flips data-theme on <html> (set before paint by the script in app/layout.tsx) and remembers the choice.
+function ThemeToggle() {
+  const [dark, setDark] = useState<boolean | null>(null);
+  useEffect(() => setDark(document.documentElement.dataset.theme === "dark"), []);
+
+  const toggle = () => {
+    const next = dark ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.theme = next; } catch {}
+    setDark(!dark);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      className="grid size-10 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+    >
+      {dark === null ? null : dark ? <Sun1 size={18} /> : <Moon size={18} />}
+    </button>
+  );
+}
 
 const isActive = (pathname: string, href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
@@ -47,35 +72,38 @@ const Navbar = () => {
           Thành<span className="text-marigold">.</span>
         </Link>
 
-        <ul className="hidden items-center gap-1 md:flex">
-          {menu.map((item) => {
-            const active = isActive(pathname, item.pathName);
-            return (
-              <li key={item.pathName} className="relative">
-                {active && (
-                  <motion.span layoutId="nav-active" transition={{ type: "spring", stiffness: 420, damping: 34 }} className="absolute inset-0 rounded-full bg-foreground" />
-                )}
-                <Link
-                  href={item.pathName}
-                  aria-current={active ? "page" : undefined}
-                  className={`relative block rounded-full px-4 py-2 text-sm font-medium transition-colors ${active ? "text-background" : "text-muted-foreground hover:text-foreground"}`}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="flex items-center gap-1">
+          <ul className="hidden items-center gap-1 md:flex">
+            {menu.map((item) => {
+              const active = isActive(pathname, item.pathName);
+              return (
+                <li key={item.pathName} className="relative">
+                  {active && (
+                    <motion.span layoutId="nav-active" transition={{ type: "spring", stiffness: 420, damping: 34 }} className="absolute inset-0 rounded-full bg-foreground" />
+                  )}
+                  <Link
+                    href={item.pathName}
+                    aria-current={active ? "page" : undefined}
+                    className={`relative block rounded-full px-4 py-2 text-sm font-medium transition-colors ${active ? "text-background" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
 
-        <button
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          className="flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium md:hidden"
-        >
-          {open ? "Close" : "Menu"}
-        </button>
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            className="flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium md:hidden"
+          >
+            {open ? "Close" : "Menu"}
+          </button>
+          <ThemeToggle />
+        </div>
       </nav>
 
       <AnimatePresence>

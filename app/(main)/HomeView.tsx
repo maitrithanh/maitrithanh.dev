@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { cvQuickInfo as quickInfo } from "@/data/cv";
 import type { getExperiences, getProjects, getSkills } from "@/lib/data";
 import { moduleVisibility, type ModuleRow } from "@/app/utils/moduleVisibility";
-import { Portrait } from "@/app/components/Portrait";
 import { WorkList } from "@/app/components/WorkList";
 import { Timeline } from "@/app/components/Timeline";
 import Counter from "../utils/CounterMotion";
@@ -15,7 +14,7 @@ import Link from "next/link";
 const ease = [0.22, 1, 0.36, 1] as const;
 
 // Data is loaded on the server by page.tsx; this renders it with the
-// interactive bits (portrait gaze, resume dialog, motion).
+// interactive bits (resume dialog, motion).
 export function HomeView({ projects, skills, timeline, settings, moduleRows }: {
   projects: Awaited<ReturnType<typeof getProjects>>;
   skills: Awaited<ReturnType<typeof getSkills>>;
@@ -36,16 +35,34 @@ export function HomeView({ projects, skills, timeline, settings, moduleRows }: {
 
   return (
     <>
-      <section className="grid min-h-[calc(100svh-5rem)] content-center gap-x-10 gap-y-8 pb-12 md:grid-cols-12">
-        <div className="relative z-10 md:col-span-7 md:self-center">
-          <h1 className="text-[clamp(4.25rem,14vw,10.5rem)] font-bold leading-[0.8] tracking-[-0.045em] [font-stretch:78%]">
-            <HeroLine delay={0.05}>Mai Trí</HeroLine>
-            <HeroLine delay={0.15} className="pl-[0.55em]">Thành.</HeroLine>
+      {/* Editorial hero: meta rule on top, the name set edge to edge, intro and actions beneath. */}
+      <section className="flex min-h-[calc(100svh-5rem)] flex-col justify-center gap-8 pb-12 md:gap-12">
+        <motion.div {...fadeUp(0)} className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b pb-4 text-sm text-muted-foreground">
+          <span>Software engineer · Ho Chi Minh City</span>
+          {current && (
+            <span className="flex items-center gap-2.5">
+              <span className="relative flex size-2 shrink-0">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-marigold opacity-75" />
+                <span className="relative inline-flex size-2 rounded-full bg-marigold" />
+              </span>
+              <span>Now at <span className="font-medium text-foreground">{current.company}</span></span>
+            </span>
+          )}
+        </motion.div>
+
+        {/* Font size in container units so the name spans the column exactly: one line on desktop, two on phones. */}
+        <div className="[container-type:inline-size]">
+          <h1 className="-ml-[0.04em] text-[48cqw] font-bold leading-[0.8] tracking-[-0.045em] [font-stretch:78%] md:whitespace-nowrap md:text-[25.4cqw]">
+            <HeroLine delay={0.05} className="md:inline-block">Mai Trí</HeroLine>{" "}
+            <HeroLine delay={0.15} className="pr-[0.08em] md:inline-block">Thành<span className="text-marigold">.</span></HeroLine>
           </h1>
-          <motion.p {...fadeUp(0.55)} className="mt-8 max-w-md text-lg leading-8 text-muted-foreground">
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-12 md:items-end">
+          <motion.p {...fadeUp(0.55)} className="max-w-lg text-lg leading-8 text-muted-foreground md:col-span-7 md:text-xl md:leading-9">
             {settings.hero_subtitle || "Software engineer building iOS apps and web products in Ho Chi Minh City."}
           </motion.p>
-          <motion.div {...fadeUp(0.65)} className="mt-8 flex flex-wrap gap-3">
+          <motion.div {...fadeUp(0.65)} className="flex flex-wrap gap-3 md:col-span-5 md:justify-end">
             <Button asChild size="lg" className="px-6">
               <a href={`mailto:${email}`}>Email me</a>
             </Button>
@@ -53,24 +70,10 @@ export function HomeView({ projects, skills, timeline, settings, moduleRows }: {
               Read my resume
             </Button>
           </motion.div>
-          {current && (
-            <motion.p {...fadeUp(0.75)} className="mt-10 flex items-start gap-2.5 text-sm text-muted-foreground">
-              <span className="relative mt-1.5 flex size-2 shrink-0">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-marigold opacity-75" />
-                <span className="relative inline-flex size-2 rounded-full bg-marigold" />
-              </span>
-              <span>Now {current.role} at <span className="font-medium text-foreground">{current.company}</span></span>
-            </motion.p>
-          )}
         </div>
 
-        <Portrait
-          bubble={settings.hero_badge || "Building clean web experiences"}
-          className="order-first mx-auto w-[min(64vw,17rem)] md:order-none md:col-span-5 md:w-full md:max-w-sm md:self-end"
-        />
-
         {modules.isVisible("stats") && (
-          <motion.dl {...fadeUp(0.85)} className="grid grid-cols-2 gap-y-6 border-t pt-6 sm:grid-cols-4 md:col-span-12">
+          <motion.dl {...fadeUp(0.85)} className="grid grid-cols-2 gap-y-6 border-t pt-6 sm:grid-cols-4">
             {[
               [2, "years shipping products"],
               [projects.length, "projects built"],

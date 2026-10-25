@@ -53,6 +53,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Runs before paint so the saved theme never flashes the other one. */}
+        <script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.dataset.theme=localStorage.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch(e){}` }} />
+      </head>
       <body className={`${display.variable} ${sans.variable} font-sans`}>
         <Providers>{children}</Providers>
         <JsonLd data={{

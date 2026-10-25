@@ -17,7 +17,7 @@ const BlogPage = async () => {
 
         <ul className="border-t">
           {posts.map((post) => (
-            <li key={post.slug} className="border-b">
+            <li key={post.slug} className="border-b last:border-b-0">
               <Link href={`/blog/${post.slug}`} className="group grid gap-4 py-8 sm:grid-cols-[8rem_1fr_9rem] sm:gap-8">
                 <time dateTime={post.publishedAt} className="text-sm tabular-nums text-muted-foreground sm:pt-1.5">
                   {new Date(post.publishedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
