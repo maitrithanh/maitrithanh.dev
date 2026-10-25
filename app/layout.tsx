@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Lexend_Deca } from "next/font/google";
+import { Be_Vietnam_Pro, Bricolage_Grotesque } from "next/font/google";
 import { Providers } from "./providers";
 import {
   SITE_URL,
@@ -11,9 +11,17 @@ import {
 import { createMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
 
-const font = Lexend_Deca({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
+// Display face for headings; Be Vietnam Pro (a Vietnamese-designed family)
+// for body text so names like "Mai Trí Thành" set their diacritics properly.
+const display = Bricolage_Grotesque({
+  subsets: ["latin", "vietnamese"],
+  axes: ["opsz", "wdth"],
+  variable: "--font-display",
+});
+const sans = Be_Vietnam_Pro({
+  weight: ["400", "500", "600"],
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-sans",
 });
 
 export const metadata = {
@@ -45,7 +53,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={font.className}>
+      <head>
+        {/* Runs before paint so the saved theme never flashes the other one. */}
+        <script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.dataset.theme=localStorage.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch(e){}` }} />
+      </head>
+      <body className={`${display.variable} ${sans.variable} font-sans`}>
         <Providers>{children}</Providers>
         <JsonLd data={{
           "@context": "https://schema.org",

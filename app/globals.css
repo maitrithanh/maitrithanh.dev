@@ -2,38 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Palette taken from the portrait: polo navy as ink, a cool paper white,
+   and marigold as the one accent. The theme script in app/layout.tsx sets
+   data-theme on <html> from the saved choice, falling back to the OS. */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --background: 225 45% 97%;      /* paper  #F4F6FB */
+    --foreground: 231 52% 18%;      /* ink    #161E45 */
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 231 52% 18%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --popover-foreground: 231 52% 18%;
+    --primary: 231 52% 18%;
+    --primary-foreground: 225 45% 97%;
+    --secondary: 226 38% 92%;
+    --secondary-foreground: 231 52% 18%;
+    --muted: 226 38% 92%;
+    --muted-foreground: 229 24% 38%;  /* #4A5378 */
+    --accent: 226 38% 92%;
+    --accent-foreground: 231 52% 18%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.5rem;
+    --border: 226 33% 89%;          /* #DCE1EE */
+    --input: 226 33% 89%;
+    --ring: 231 52% 18%;
+    --marigold: 41 91% 58%;         /* #F5B731 */
+    --radius: 0.75rem;
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --background: 230 57% 12%;    /* #0D1330 */
+    --foreground: 229 50% 94%;
+    --card: 230 50% 15%;
+    --card-foreground: 229 50% 94%;
+    --popover: 230 50% 15%;
+    --popover-foreground: 229 50% 94%;
+    --primary: 229 50% 94%;
+    --primary-foreground: 230 57% 12%;
+    --secondary: 231 40% 20%;
+    --secondary-foreground: 229 50% 94%;
+    --muted: 231 40% 20%;
+    --muted-foreground: 228 27% 69%;
+    --accent: 231 40% 20%;
+    --accent-foreground: 229 50% 94%;
+    --border: 231 40% 24%;
+    --input: 231 40% 24%;
+    --ring: 41 91% 58%;
   }
 
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  html {
-    scroll-behavior: smooth;
+  h1, h2, h3 {
+    @apply font-display;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: hsl(var(--marigold));
+    color: hsl(231 52% 18%);
+  }
+  :focus-visible {
+    outline: 2px solid hsl(var(--marigold));
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Marigold underline that sweeps in on hover/focus. */
+  .link-sweep {
+    background: linear-gradient(hsl(var(--marigold)), hsl(var(--marigold))) left bottom / 0 0.12em no-repeat;
+    transition: background-size 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .link-sweep:hover, .link-sweep:focus-visible {
+    background-size: 100% 0.12em;
   }
 }

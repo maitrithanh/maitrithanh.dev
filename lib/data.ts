@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import { createClient } from "./supabase/server";
 import { list, type TableName } from "./supabase/api";
 import { getPageModules } from "./page-modules";
@@ -15,6 +16,7 @@ async function read<T>(table: TableName, map: (row: any) => NoInfer<T>, fallback
     const rows = await list(table, options);
     if (rows?.length) return rows.map(map);
   } catch (e) {
+    unstable_rethrow(e); // let Next's own dynamic-rendering signals through
     console.error(`Failed to load ${table}, using static data`, e);
   }
   return fallback;
@@ -32,6 +34,7 @@ export async function getBlogPostBySlug(slug: string) {
     if (error) throw error;
     if (data) return toBlogPost(data);
   } catch (e) {
+    unstable_rethrow(e); // let Next's own dynamic-rendering signals through
     console.error("Failed to load blog post, using static data", e);
   }
   return staticBlogPosts.find((p) => p.slug === slug) || null;
@@ -44,6 +47,7 @@ export async function getSettings() {
       if (!item.key.startsWith("sort:") && item.key !== "page_modules") settings[item.key] = item.value;
     }
   } catch (e) {
+    unstable_rethrow(e); // let Next's own dynamic-rendering signals through
     console.error("Failed to load settings, using defaults", e);
   }
   return settings;
@@ -56,6 +60,7 @@ export async function getModules(page: string) {
       .filter((m) => m.page === page)
       .map((m) => ({ section: m.section, visible: m.visible }));
   } catch (e) {
+    unstable_rethrow(e); // let Next's own dynamic-rendering signals through
     console.error("Failed to load page modules", e);
     return [];
   }

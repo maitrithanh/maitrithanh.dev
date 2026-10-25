@@ -1,44 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Home, FolderOpen } from "iconsax-reactjs";
 
 export const metadata: Metadata = {
-  title: "404 - Page Not Found",
-  robots: {
-    index: false,
-    follow: false,
-  },
+  title: "Page not found",
+  robots: { index: false, follow: false },
 };
 
 export default function NotFound() {
   return (
-    <div className="mx-auto flex max-w-lg flex-col items-center py-20 text-center">
-      <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-border/60 bg-muted/30">
-        <span className="text-2xl font-semibold text-muted-foreground">
-          404
-        </span>
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-5 md:px-8">
+      <p className="text-[clamp(6rem,24vw,16rem)] font-display font-bold leading-[0.8] tracking-[-0.05em] text-marigold [font-stretch:75%]">404</p>
+      <h1 className="mt-6 text-3xl font-semibold tracking-tight md:text-5xl">This page doesn&apos;t exist.</h1>
+      <p className="mt-3 max-w-md text-lg text-muted-foreground">The link may be old or mistyped. Start from the home page or browse the projects.</p>
+      <div className="mt-8 flex flex-wrap gap-3">
+        <Button asChild size="lg" className="px-6"><Link href="/">Go home</Link></Button>
+        <Button asChild size="lg" variant="outline" className="px-6"><Link href="/projects">See projects</Link></Button>
       </div>
-      <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-        Page not found
-      </h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        The page you are looking for does not exist or has been moved.
-      </p>
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Button asChild>
-          <Link href="/" className="inline-flex items-center gap-2">
-            <Home variant="Outline" />
-            Back to Home
-          </Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/projects" className="inline-flex items-center gap-2">
-            <FolderOpen variant="Outline" />
-            View Projects
-          </Link>
-        </Button>
-      </div>
-    </div>
+    </main>
   );
 }

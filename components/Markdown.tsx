@@ -16,11 +16,11 @@ const components: Components = {
   strong: ({ node, ...p }) => <strong className="font-semibold text-foreground" {...p} />,
   ul: ({ node, ...p }) => <ul className="mt-4 list-disc space-y-1.5 pl-6 marker:text-muted-foreground [&.contains-task-list]:list-none [&.contains-task-list]:pl-1" {...p} />,
   ol: ({ node, ...p }) => <ol className="mt-4 list-decimal space-y-1.5 pl-6 marker:text-muted-foreground" {...p} />,
-  blockquote: ({ node, ...p }) => <blockquote className="mt-6 border-l-2 border-foreground/20 pl-4 italic text-muted-foreground" {...p} />,
+  blockquote: ({ node, ...p }) => <blockquote className="mt-6 border-l-2 border-marigold pl-4 italic text-muted-foreground" {...p} />,
   hr: () => <hr className="my-8 border-border/60" />,
   // eslint-disable-next-line @next/next/no-img-element
   img: ({ src, alt }) => <img src={typeof src === "string" && src ? src : undefined} alt={alt ?? ""} loading="lazy" className="mt-6 w-full rounded-xl border border-border/40" />,
-  pre: ({ node, ...p }) => <pre className="mt-6 overflow-x-auto rounded-xl bg-zinc-950 p-4 text-sm leading-6 text-zinc-100" {...p} />,
+  pre: ({ node, ...p }) => <pre className="mt-6 overflow-x-auto rounded-xl bg-[hsl(231_52%_10%)] p-4 text-sm leading-6 text-[hsl(229_50%_94%)]" {...p} />,
   code: ({ node, className, ...p }) => className
     ? <code className={className} {...p} />
     : <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.875em] text-foreground [pre_&]:bg-transparent [pre_&]:p-0 [pre_&]:text-inherit" {...p} />,
@@ -31,7 +31,7 @@ const components: Components = {
 
 export function Markdown({ source }: { source: string }) {
   return (
-    <div className="text-base leading-7 text-foreground/85 [&>*:first-child]:mt-0">
+    <div className="leading-8 text-foreground/85 [&>*:first-child]:mt-0">
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
         {tidyEmphasis(source)}
       </ReactMarkdown>

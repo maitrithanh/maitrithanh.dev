@@ -1,36 +1,38 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { Loading } from "@/components/ui/page-skeletons";
 
-// Home: centered hero, then section blocks.
-export default function Loading() {
+// Home: meta rule, the name edge to edge (two lines on phones), intro + actions, stats.
+export default function HomeLoading() {
   return (
-    <div role="status" className="flex flex-col gap-6">
-      <span className="sr-only">Loading...</span>
-      <section className="flex h-[68dvh] flex-col items-center justify-center gap-5">
-        <Skeleton className="h-6 w-48 rounded-full" />
-        <Skeleton className="h-12 w-80 max-w-full" />
-        <Skeleton className="h-5 w-96 max-w-full" />
-        <div className="flex gap-3">
-          <Skeleton className="h-10 w-36" />
-          <Skeleton className="h-10 w-28" />
+    <Loading>
+      <div className="flex min-h-[calc(100svh-5rem)] flex-col justify-center gap-8 pb-12 md:gap-12">
+        <div className="flex justify-between border-b pb-4">
+          <Skeleton className="h-4 w-56" />
+          <Skeleton className="h-4 w-36" />
         </div>
-      </section>
-      <div className="space-y-6 border-b border-gray-100 pb-10">
-        <Skeleton className="h-5 w-28" />
-        <div className="flex flex-wrap justify-between gap-6">
-          {Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="size-12 rounded-sm" />)}
+        <div className="space-y-4">
+          <Skeleton className="h-[38vw] w-4/5 rounded-xl md:h-[min(18vw,13rem)] md:w-full" />
+          <Skeleton className="h-[38vw] w-full rounded-xl md:hidden" />
         </div>
-      </div>
-      <div className="space-y-4">
-        <Skeleton className="h-5 w-28" />
-        {Array.from({ length: 2 }, (_, i) => (
-          <div key={i} className="space-y-2 border-l-2 border-muted pl-4">
-            <Skeleton className="h-4 w-48" />
-            <Skeleton className="h-3 w-32" />
-            <Skeleton className="h-3 w-full" />
-            <Skeleton className="h-3 w-5/6" />
+        <div className="grid gap-8 md:grid-cols-12 md:items-end">
+          <div className="max-w-lg space-y-2 md:col-span-7">
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-2/3" />
           </div>
-        ))}
+          <div className="flex gap-3 md:col-span-5 md:justify-end">
+            <Skeleton className="h-11 w-32 rounded-full" />
+            <Skeleton className="h-11 w-40 rounded-full" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-6 border-t pt-6 sm:grid-cols-4">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="h-9 w-20" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </Loading>
   );
 }

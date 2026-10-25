@@ -1,30 +1,23 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 
-// Shared by the blog and projects loading states: badge, title, intro.
-export function PageHeaderSkeleton() {
+// Matches PageIntro: condensed display title and an intro paragraph.
+export function PageIntroSkeleton() {
   return (
-    <div className="space-y-3">
-      <Skeleton className="h-6 w-20 rounded-full" />
-      <Skeleton className="h-10 w-48" />
-      <Skeleton className="h-5 w-full max-w-xl" />
+    <div className="space-y-6 pb-12 pt-6 md:pb-16 md:pt-10">
+      <Skeleton className="h-[clamp(3rem,9vw,6.5rem)] w-3/5 rounded-xl" />
+      <div className="max-w-xl space-y-2">
+        <Skeleton className="h-5 w-full" />
+        <Skeleton className="h-5 w-4/5" />
+      </div>
     </div>
   );
 }
 
-export function CardGridSkeleton({ count, className, image, children }: { count: number; className?: string; image: string; children?: React.ReactNode }) {
+export function Loading({ children }: { children: React.ReactNode }) {
   return (
-    <div className={cn("grid gap-6", className)}>
-      {Array.from({ length: count }, (_, i) => (
-        <div key={i} className="overflow-hidden rounded-xl bg-muted/40">
-          <Skeleton className={cn("w-full rounded-none", image)} />
-          <div className="space-y-2 p-4">
-            <Skeleton className="h-3 w-16" />
-            <Skeleton className="h-4 w-3/4" />
-            {children}
-          </div>
-        </div>
-      ))}
+    <div role="status">
+      <span className="sr-only">Loading...</span>
+      {children}
     </div>
   );
 }
