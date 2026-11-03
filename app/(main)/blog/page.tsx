@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { isExternal } from "@/lib/utils";
 import { getBlogPosts, getModules } from "@/lib/data";
 import { moduleVisibility } from "@/app/utils/moduleVisibility";
 import { PageIntro } from "@/app/components/PageIntro";
@@ -30,7 +31,7 @@ const BlogPage = async () => {
                   <p className="mt-3 text-sm text-muted-foreground">{post.category}, {post.readTime}</p>
                 </div>
                 <div className="relative hidden aspect-[4/3] overflow-hidden rounded-xl bg-muted sm:block">
-                  <Image src={post.cover} alt="" fill sizes="9rem" className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105" />
+                  <Image src={post.cover} unoptimized={isExternal(post.cover)} alt="" fill sizes="9rem" className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105" />
                 </div>
               </Link>
             </li>

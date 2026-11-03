@@ -126,3 +126,7 @@ CREATE POLICY "Full access for authenticated" ON page_modules FOR ALL USING (aut
 
 -- Public read access
 CREATE POLICY "Public read access" ON page_modules FOR SELECT USING (true);
+
+-- Public bucket for CMS image uploads (written by /api/upload with the service role)
+INSERT INTO storage.buckets (id, name, public) VALUES ('images', 'images', true)
+ON CONFLICT (id) DO NOTHING;

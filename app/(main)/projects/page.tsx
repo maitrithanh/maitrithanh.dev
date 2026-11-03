@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { isExternal } from "@/lib/utils";
 import { getModules, getProjects } from "@/lib/data";
 import { moduleVisibility } from "@/app/utils/moduleVisibility";
 import { PageIntro } from "@/app/components/PageIntro";
@@ -37,6 +38,7 @@ const ProjectsPage = async () => {
                   <div className="relative aspect-[16/10] bg-muted">
                     <Image
                       src={project.image}
+                      unoptimized={isExternal(project.image)}
                       alt={`${project.name} screenshot`}
                       fill
                       sizes="(min-width: 768px) 45vw, 100vw"

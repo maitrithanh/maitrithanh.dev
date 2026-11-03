@@ -42,7 +42,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
             "@type": "BlogPosting",
             headline: post.title,
             description: post.summary,
-            image: `${SITE_URL}${post.cover}`,
+            image: new URL(post.cover, SITE_URL).toString(),
             datePublished: post.publishedAt,
             author: { "@type": "Person", name: "Mai Tri Thanh", url: SITE_URL },
             publisher: { "@type": "Person", name: "Mai Tri Thanh" },

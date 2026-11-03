@@ -1,9 +1,19 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Code1, Gallery, Grid2, Link1, Minus, QuoteUp, TaskSquare, TextBold, TextItalic, type Icon } from "iconsax-reactjs";
 import { block, continueList, link, linePrefix, readTime, wrap, type TextEdit } from "@/lib/markdown-edit";
 
-type Tool = { label: string; icon: Icon | string; keys?: string; run: (v: string, s: number, e: number) => TextEdit };
+type Tool = { label: string; icon: Icon | string; keys?: string; upload?: boolean; run: (v: string, s: number, e: number) => TextEdit };
+
+// Uploads to /api/upload (Supabase Storage) and returns the public URL.
+export async function uploadImage(file: File): Promise<string> {
+  const body = new FormData();
+  body.append("file", file);
+  const res = await fetch("/api/upload", { method: "POST", body });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
+  return data.url;
+}
 
 const tools: (Tool | "|")[] = [
   { label: "Heading 2", icon: "H2", run: (v, s, e) => linePrefix(v, s, e, "## ", /^## /) },
@@ -21,7 +31,7 @@ const tools: (Tool | "|")[] = [
   { label: "Quote", icon: QuoteUp, run: (v, s, e) => linePrefix(v, s, e, "> ", /^> /) },
   "|",
   { label: "Code block", icon: Code1, run: (v, s, e) => block(v, s, e, "```ts\n" + (v.slice(s, e) || "code") + "\n```", v.slice(s, e) || "code") },
-  { label: "Image", icon: Gallery, run: (v, s, e) => wrap(v, s, e, "![", "](/image.webp)", "alt text") },
+  { label: "Upload image", icon: Gallery, upload: true, run: (v, s, e) => wrap(v, s, e, "![", "](/image.webp)", "alt text") },
   { label: "Table", icon: Grid2, run: (v, s, e) => block(v, s, e, "| Column | Column |\n| --- | --- |\n| Cell | Cell |", "Column") },
   { label: "Divider", icon: Minus, run: (v, s, e) => block(v, s, e, "---") },
 ];
@@ -30,6 +40,8 @@ const shortcuts = Object.fromEntries(tools.flatMap((t) => (t !== "|" && t.keys ?
 
 export function MarkdownEditor({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   const ref = useRef<HTMLTextAreaElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   // execCommand keeps the browser's undo stack; fall back to a plain set.
   const apply = (edit: TextEdit | null) => {
@@ -43,8 +55,25 @@ export function MarkdownEditor({ label, value, onChange }: { label: string; valu
     requestAnimationFrame(() => ta.setSelectionRange(edit.selStart, edit.selEnd));
   };
   const run = (tool: Tool) => {
+    if (tool.upload) return fileRef.current?.click();
     const ta = ref.current!;
     apply(tool.run(ta.value, ta.selectionStart, ta.selectionEnd));
+  };
+
+  const insertImages = async (files: File[]) => {
+    setUploading(true);
+    try {
+      for (const file of files) {
+        const url = await uploadImage(file);
+        const ta = ref.current!;
+        const alt = file.name.replace(/\.[^.]+$/, "").replace(/[[\]]/g, "");
+        apply(block(ta.value, ta.selectionStart, ta.selectionEnd, `![${alt}](${url})`));
+      }
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -62,8 +91,14 @@ export function MarkdownEditor({ label, value, onChange }: { label: string; valu
     }
   };
 
-  // Pasting a URL over selected text turns it into a link.
+  // Pasting an image uploads it; pasting a URL over selected text turns it into a link.
   const onPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const images = [...e.clipboardData.files].filter((f) => f.type.startsWith("image/"));
+    if (images.length) {
+      e.preventDefault();
+      insertImages(images);
+      return;
+    }
     const ta = e.currentTarget;
     const url = e.clipboardData.getData("text/plain").trim();
     if (ta.selectionStart !== ta.selectionEnd && /^https?:\/\/\S+$/.test(url)) {
@@ -89,11 +124,13 @@ export function MarkdownEditor({ label, value, onChange }: { label: string; valu
             onClick={() => run(t)}
             title={t.keys ? `${t.label} (${mod}${t.keys})` : t.label}
             aria-label={t.label}
-            className="flex h-8 min-w-8 items-center justify-center rounded-md px-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+            disabled={t.upload && uploading}
+            className="flex h-8 min-w-8 items-center justify-center rounded-md px-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-background hover:text-foreground disabled:animate-pulse"
           >
             {typeof t.icon === "string" ? t.icon : <t.icon size={16} />}
           </button>
         ))}
+        <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => { insertImages([...e.target.files!]); e.target.value = ""; }} />
       </div>
       <textarea
         ref={ref}
@@ -107,8 +144,8 @@ export function MarkdownEditor({ label, value, onChange }: { label: string; valu
         className="block min-h-[28rem] w-full resize-y bg-transparent px-4 py-3 font-mono text-sm leading-6 text-foreground placeholder:text-muted-foreground/50 focus:outline-none [field-sizing:content]"
       />
       <div className="flex items-center justify-between border-t border-border/60 px-3 py-1.5 text-[11px] text-muted-foreground">
-        <span>Markdown · {words} words · {readTime([value])}</span>
-        <span className="hidden sm:inline">{mod}B bold · {mod}I italic · {mod}K link · paste URL on text to link</span>
+        <span>Markdown · {words} words · {readTime([value])}{uploading && " · Uploading image..."}</span>
+        <span className="hidden sm:inline">{mod}B bold · {mod}I italic · {mod}K link · paste image to upload</span>
       </div>
     </div>
   );

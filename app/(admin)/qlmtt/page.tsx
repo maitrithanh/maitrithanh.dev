@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { readTime } from "@/lib/markdown-edit";
 import { BlogPostView } from "@/components/BlogPostView";
-import { MarkdownEditor } from "./MarkdownEditor";
+import { MarkdownEditor, uploadImage } from "./MarkdownEditor";
 
 // Admin CMS. One screen with tabs (Projects, Blog, Skills, Experience,
 // Modules, Settings). Each tab is a "manager": it lists rows, lets you
@@ -698,6 +698,18 @@ function Field({ def, value, onChange, autoFocus }: {
   autoFocus?: boolean;
 }) {
   const wide = def.wide || def.as === "textarea";
+  const [uploading, setUploading] = useState(false);
+  const upload = async (file?: File) => {
+    if (!file) return;
+    setUploading(true);
+    try {
+      onChange(await uploadImage(file));
+    } catch (e) {
+      toastError(e);
+    } finally {
+      setUploading(false);
+    }
+  };
   return (
     <label className={`block ${wide ? "sm:col-span-2" : ""}`}>
       <span className="mb-1.5 block text-xs font-medium text-muted-foreground">
@@ -718,6 +730,12 @@ function Field({ def, value, onChange, autoFocus }: {
             autoFocus={autoFocus}
             className={inputCls}
           />
+          {def.preview && (
+            <span className={cn(ghostBtn, "relative shrink-0 cursor-pointer focus-within:ring-2 focus-within:ring-foreground/20", uploading && "pointer-events-none opacity-50")}>
+              {uploading ? "Uploading..." : "Upload"}
+              <input type="file" accept="image/*" aria-label={`Upload ${def.label}`} disabled={uploading} onChange={(e) => { upload(e.target.files?.[0]); e.target.value = ""; }} className="absolute inset-0 cursor-pointer opacity-0" />
+            </span>
+          )}
         </div>
       )}
     </label>

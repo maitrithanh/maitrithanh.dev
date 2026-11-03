@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { isExternal } from "@/lib/utils";
 import { Markdown } from "@/components/Markdown";
 import type { BlogPost } from "@/types/blog";
 
@@ -26,7 +27,7 @@ export function BlogPostView({ post, preview }: { post: BlogPost; preview?: bool
             // eslint-disable-next-line @next/next/no-img-element
             <img src={post.cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
           ) : (
-            <Image src={post.cover} alt="" fill sizes="(min-width: 768px) 48rem, 100vw" className="object-cover" priority />
+            <Image src={post.cover} unoptimized={isExternal(post.cover)} alt="" fill sizes="(min-width: 768px) 48rem, 100vw" className="object-cover" priority />
           )}
         </div>
       )}
